@@ -1,0 +1,16 @@
+{
+  "name": "cs308",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://s21nkamadan@ipost.sabanciuniv.edu:7990/scm/scour11/cs308.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
