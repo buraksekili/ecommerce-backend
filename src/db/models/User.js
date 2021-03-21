@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -33,6 +34,8 @@ UserSchema.pre("save", async function (next) {
     return;
   }
 
+  const salt = await bcrypt.genSalt(8);
+  this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
