@@ -16,8 +16,7 @@ services:
       MONGO_USERNAME: admin
       MONGO_PASSWORD: example
     volumes:
-      - ./data:/data/db
-      - ./mongo-entrypoint.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     command: mongod
 
 
