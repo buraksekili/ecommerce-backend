@@ -35,7 +35,6 @@ signupRouter.post("/api/signup", async (req, res) => {
 // Validates request body
 const validateReqBody = (...req) => {
   for (r of req) {
-    console.log("lool ", r);
     if (!r || r.trim().length == 0) {
       return false;
     }
