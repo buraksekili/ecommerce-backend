@@ -1,3 +1,5 @@
+## MongoDB Setup
+
 To build development MongoDB server, you need to install `docker-compose` ( If you have `Docker Desktop`, it is pre-installed.)
 
 Then, you can build development DB as 
@@ -6,4 +8,11 @@ Then, you can build development DB as
 
 MongoDB listens port `:27017`
 
-You can check collections via read-to-use interface that listens `:8081`
+You can check collections via ready-to-use interface that listens `:8081`
+
+
+## Run Server
+
+`npm run dev`
+
+Server listens on `:3000`
