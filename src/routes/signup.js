@@ -42,6 +42,7 @@ const validateReqBody = (...req) => {
   return true;
 };
 
+
 // Checks errors returning from DB
 const getErrors = (error) => {
   if (error instanceof mongoose.Error.ValidationError) {
