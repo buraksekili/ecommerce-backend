@@ -1,36 +1,38 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const User = require("../db/models/User");
+const bcrypt = require("bcrypt");
 
 const loginRouter = express.Router();
 
-loginRouter.get("/", (req, res) => res.send("In Login"));
+loginRouter.get("/api/login2", (req, res) => res.send("In Login"));
 
 loginRouter.post("/api/login", async (req, res) => {
-  const { userEmail, password, username } = req.body;
+  const { userEmail, password} = req.body;
 
-  if (!validateReqBody(userEmail, password, username)) {
+  if (!validateReqBody(userEmail, password)) {
     return res
       .status(401)
       .send({ status: false, type: "INVALID", error: "invalid request body" });
   }
-
   try {
+
     const newUser = new User({
-      email: userEmail,
-      password: password,
-      username: username,
+        email: userEmail,
+        password: password,
     });
-    await newUser.save();
-  } catch (error) {
+    await User.findByCredentials(userEmail, password);
+} catch (error) {
     const validationErr = getErrors(error);
+    console.log(validationErr);
     return res
       .status(401)
       .send({ status: false, type: "VALIDATION", error: validationErr });
   }
 
-  res.send({ status: true });
+    res.send({ status: true });
 });
+
 
 // Validates request body
 const validateReqBody = (...req) => {
@@ -55,4 +57,6 @@ const getErrors = (error) => {
   return error.message;
 };
 
-module.exports = { signupRouter };
+
+
+module.exports = { loginRouter };

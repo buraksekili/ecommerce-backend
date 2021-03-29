@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 
-const { signupRouter } = require("./routes");
+const { signupRouter, loginRouter } = require("./routes");
 const { MONGO_URI, MONGO_OPTIONS } = require("./config");
 
 const app = express();
@@ -12,11 +12,12 @@ app.use(morgan("dev"));
 
 // Routers
 app.use("/", signupRouter);
+app.use("/", loginRouter);
 
 mongoose
   .connect(MONGO_URI, MONGO_OPTIONS)
   .then(() => console.log("connected"))
   .catch((e) => console.log("error:", e));
-  
+
 
 app.listen(port, () => console.log(`running on ${port}`));
