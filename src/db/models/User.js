@@ -1,25 +1,28 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    trim: true,
-    unique: true,
+const UserSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      trim: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      trim: true,
+      required: [true, "Password is required"],
+    },
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      trim: true,
+      unique: true,
+    },
   },
-  password: {
-    type: String,
-    trim: true,
-    required: [true, "Password is required"],
-  },
-  username: {
-    type: String,
-    required: [true, "Username is required"],
-    trim: true,
-    unique: true,
-  },
-});
+  { versionKey: false }
+);
 
 UserSchema.pre("save", async function (next) {
   const user = await User.findOne({ email: this.email });
@@ -50,6 +53,7 @@ UserSchema.statics.findByCredentials = async (email, password) => {
     throw Error("Wrong password!");
   }
 
+  user.password = undefined;
   return user;
 };
 

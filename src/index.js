@@ -2,7 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 
-const { signupRouter, loginRouter, productRouter } = require("./routes");
+const {
+  signupRouter,
+  loginRouter,
+  productRouter,
+  userRouter,
+} = require("./routes");
 const { MONGO_URI, MONGO_OPTIONS } = require("./config");
 
 const app = express();
@@ -14,6 +19,7 @@ app.use(morgan("dev"));
 app.use("/", signupRouter);
 app.use("/", loginRouter);
 app.use("/", productRouter);
+app.use("/admin", userRouter);
 
 mongoose
   .connect(MONGO_URI, MONGO_OPTIONS)

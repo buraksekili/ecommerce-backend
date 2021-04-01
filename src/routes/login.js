@@ -13,7 +13,8 @@ loginRouter.post("/api/login", async (req, res) => {
       .send({ status: false, type: "INVALID", error: "invalid request body" });
   }
   try {
-    await User.findByCredentials(userEmail, password);
+    const user = await User.findByCredentials(userEmail, password);
+    res.send({ status: true, user });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
@@ -21,8 +22,6 @@ loginRouter.post("/api/login", async (req, res) => {
       .status(401)
       .send({ status: false, type: "VALIDATION", error: validationErr });
   }
-
-  res.send({ status: true });
 });
 
 module.exports = { loginRouter };
