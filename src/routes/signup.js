@@ -1,10 +1,9 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const User = require("../db/models/User");
 
-const signupRouter = express.Router();
+const { validateReqBody, getErrors } = require("../helpers");
 
-signupRouter.get("/", (req, res) => res.send("hello"));
+const signupRouter = express.Router();
 
 signupRouter.post("/api/signup", async (req, res) => {
   const { userEmail, password, username } = req.body;
@@ -31,28 +30,5 @@ signupRouter.post("/api/signup", async (req, res) => {
 
   res.send({ status: true });
 });
-
-// Validates request body
-const validateReqBody = (...req) => {
-  for (r of req) {
-    if (!r || r.trim().length == 0) {
-      return false;
-    }
-  }
-  return true;
-};
-
-
-// Checks errors returning from DB
-const getErrors = (error) => {
-  if (error instanceof mongoose.Error.ValidationError) {
-    let validationErr = "";
-    for (field in error.errors) {
-      validationErr += `${field} `;
-    }
-    return validationErr.substring(0, validationErr.length - 1);
-  }
-  return error.message;
-};
 
 module.exports = { signupRouter };
