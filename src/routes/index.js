@@ -1,4 +1,5 @@
 module.exports = {
   ...require("./signup"),
-  ...require("./login")
+  ...require("./login"),
+  ...require("./product")
 };
