@@ -1,2 +1,4 @@
 node_modules
 data
+docker-compose.yml
+src/config/db.js

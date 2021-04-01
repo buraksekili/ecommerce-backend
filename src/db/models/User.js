@@ -39,5 +39,19 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
+// userSchema.statics is accessible by model
+UserSchema.statics.findByCredentials = async (email, password) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+      throw Error("Email does not exist!");
+  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+      throw Error("Wrong password!");
+  }
+
+  return user;
+};
+
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
