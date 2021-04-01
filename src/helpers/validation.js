@@ -3,8 +3,15 @@ const mongoose = require("mongoose");
 // Returns false if any field of req.body is empty
 const validateReqBody = (...req) => {
   for (r of req) {
-    if (!r || r.trim().length == 0) {
+    if (typeof r === "number" && r < 0) {
       return false;
+    } else {
+      if (r === undefined) {
+        return false;
+      }
+      if (typeof r === "string" && (!r || r.trim().length == 0)) {
+        return false;
+      }
     }
   }
   return true;

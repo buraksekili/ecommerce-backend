@@ -1,6 +1,5 @@
 const express = require("express");
-const User = require("../db/models/User");
-
+const { User } = require("../db");
 const { validateReqBody, getErrors } = require("../helpers");
 
 const signupRouter = express.Router();
