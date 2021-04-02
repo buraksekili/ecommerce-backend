@@ -14,11 +14,7 @@ signupRouter.post("/api/signup", async (req, res) => {
   }
 
   try {
-    const newUser = new User({
-      email: userEmail,
-      password: password,
-      username: username,
-    });
+    const newUser = new User({ userEmail, password, username });
     await newUser.save();
   } catch (error) {
     const validationErr = getErrors(error);

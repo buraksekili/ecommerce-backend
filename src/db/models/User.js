@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 const UserSchema = new mongoose.Schema(
   {
-    email: {
+    userEmail: {
       type: String,
       required: [true, "Email is required"],
       trim: true,
@@ -25,9 +25,9 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre("save", async function (next) {
-  const user = await User.findOne({ email: this.email });
+  const user = await User.findOne({ userEmail: this.userEmail });
   if (user) {
-    next(new Error(`${this.email} already taken`));
+    next(new Error(`${this.userEmail} already taken`));
     return;
   }
 
@@ -43,8 +43,8 @@ UserSchema.pre("save", async function (next) {
 });
 
 // userSchema.statics is accessible by model
-UserSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email });
+UserSchema.statics.findByCredentials = async (userEmail, password) => {
+  const user = await User.findOne({ userEmail });
   if (!user) {
     throw Error("Email does not exist!");
   }

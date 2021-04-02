@@ -1,6 +1,6 @@
 const express = require("express");
 const { User } = require("../db/");
-const { validateReqBody, getErrors } = require("../helpers");
+const { getErrors } = require("../helpers");
 
 const userRouter = express.Router();
 
