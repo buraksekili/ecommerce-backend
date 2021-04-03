@@ -42,6 +42,7 @@ afterEach(async () => {
 });
 
 describe("POST /api for login and sigup", () => {
+  // CHECK LOGIN ENDPOINTS
   it("should login", async (done) => {
     const url = "/api/login";
     try {
@@ -53,6 +54,73 @@ describe("POST /api for login and sigup", () => {
 
       const { userEmail, username } = testUser;
       expect(result.body.user).toMatchObject({ userEmail, username });
+
+      done();
+    } catch (error) {
+      done(error);
+    }
+  });
+
+  it("shouldn't login", async (done) => {
+    const url = "/api/login";
+    try {
+      const result = await request(app).post(url).send({});
+
+      // status check
+      expect(result.status).toEqual(401);
+      expect(result.body.status).toEqual(false);
+
+      done();
+    } catch (error) {
+      done(error);
+    }
+  });
+
+  it("shouldn't login with empty body", async (done) => {
+    const url = "/api/login";
+    try {
+      const result = await request(app).post(url);
+
+      // status check
+      expect(result.status).toEqual(401);
+      expect(result.body.status).toEqual(false);
+
+      done();
+    } catch (error) {
+      done(error);
+    }
+  });
+
+  // CHECK SIGNUP ENDPOINTS
+  it("should signup", async (done) => {
+    const url = "/api/signup";
+
+    try {
+      const result = await request(app).post(url).send({
+        userEmail: "tester",
+        password: "_TESTER_",
+        username: "tester",
+      });
+
+      // status check
+      expect(result.status).toEqual(200);
+      expect(result.body.status).toEqual(true);
+
+      done();
+    } catch (error) {
+      done(error);
+    }
+  });
+
+  it("shouldn't signup", async (done) => {
+    const url = "/api/signup";
+
+    try {
+      const result = await request(app).post(url).send(testUser);
+
+      // status check
+      expect(result.status).toEqual(401);
+      expect(result.body.status).toEqual(false);
 
       done();
     } catch (error) {
