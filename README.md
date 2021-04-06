@@ -1,14 +1,12 @@
-## MongoDB Setup
+## MongoDB Connection
 
-To build development MongoDB server, you need to install `docker-compose` ( If you have `Docker Desktop`, it is pre-installed.)
+You need to create `.env` file in the main folder (./).
+Your `.env` file's format must be the same as following;
 
-Then, you can build development DB as 
-
-`docker-compose up --build -V -d`
-
-MongoDB listens port `:27018`
-
-You can check collections via ready-to-use interface that listens `:8081`
+```
+MONGO_USERNAME=username
+MONGO_PASSWORD=yourpassword
+```
 
 
 ## Run Server
