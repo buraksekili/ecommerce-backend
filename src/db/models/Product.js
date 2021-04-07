@@ -1,7 +1,17 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 
-const ProductSchema = new mongoose.Schema(
+const Schema = mongoose.Schema;
+
+const CommentSchema = new Schema(
+  {
+    content: { type: String },
+    owner: { type: String },
+  },
+  { timestamps: { createdAt: "createdAt" } }
+);
+const CommentModel = mongoose.model("Comment", CommentSchema);
+
+const ProductSchema = new Schema(
   {
     productName: {
       type: String,
@@ -23,7 +33,6 @@ const ProductSchema = new mongoose.Schema(
     },
     rate: {
       type: Number,
-      required: [true, "Rate is required"],
     },
     stock: {
       type: Number,
@@ -33,10 +42,13 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Warranty is required"],
     },
+    comments: {
+      // type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+      type: [CommentSchema],
+    },
   },
   { versionKey: false }
 );
 
-
 const Product = mongoose.model("Product", ProductSchema);
-module.exports = { Product };
+module.exports = { Product, CommentModel };
