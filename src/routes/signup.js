@@ -14,16 +14,27 @@ signupRouter.post("/api/signup", async (req, res) => {
   }
 
   try {
-    const newUser = new User({ userEmail, password, username });
+    // Create user object to save
+    let newUser = new User({ userEmail, password, username });
+
+    // Get JWT for the user and update token field of the new user.
+    // Then, save updated user.
+    const token = await newUser.getJWT();
+    newUser.token = token;
     await newUser.save();
+
+    // Convert User to object in order to delete password field.
+    // So that client does not see user's password while returning through response.
+    newUser = newUser.toObject();
+    delete newUser.password;
+
+    res.send({ status: true, user: newUser });
   } catch (error) {
     const validationErr = getErrors(error);
     return res
       .status(401)
       .send({ status: false, type: "VALIDATION", error: validationErr });
   }
-
-  res.send({ status: true });
 });
 
 module.exports = { signupRouter };

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -19,6 +20,10 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Username is required"],
       trim: true,
       unique: true,
+    },
+    token: {
+      type: String,
+      required: true,
     },
   },
   { versionKey: false }
@@ -42,6 +47,23 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
+// getJWT generates new JWT for user.
+// Returns updated JWT of the user.
+UserSchema.methods.getJWT = async function () {
+  try {
+    const token = jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
+      expiresIn: 3600,
+    });
+
+    this.token = token;
+    await User.findByIdAndUpdate(this._id, this);
+
+    return token;
+  } catch (e) {
+    return Error(e);
+  }
+};
+
 // userSchema.statics is accessible by model
 UserSchema.statics.findByCredentials = async (userEmail, password) => {
   const user = await User.findOne({ userEmail });
@@ -58,4 +80,4 @@ UserSchema.statics.findByCredentials = async (userEmail, password) => {
 };
 
 const User = mongoose.model("User", UserSchema);
-module.exports = { User };
+module.exports = { User, UserSchema };
