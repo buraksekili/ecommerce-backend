@@ -4,6 +4,7 @@ const { User } = require("../src/db");
 const mongoose = require("mongoose");
 const { MONGO_OPTIONS } = require("../src/config");
 const { dropAllCollections, removeAllCollections } = require("./helpers");
+jest.setTimeout(50000);
 
 const MONGO_TEST_URI = `mongodb://admin2:${encodeURIComponent(
   "example"
@@ -28,9 +29,17 @@ afterAll(async () => {
 
 beforeEach(async () => {
   try {
-    const newUser = new User(testUser);
-    const user = await newUser.save();
-    testUser["_id"] = user._id;
+    let newUser = new User(testUser);
+    const token = await newUser.getJWT();
+    newUser.token = token;
+    await newUser.save();
+    testUser["_id"] = newUser._id;
+    testUser["token"] = newUser.token;
+    // const newUser = new User(testUser);
+    // const token = await newUser.getJWT();
+    // testUser["token"] = token;
+    // const user = await newUser.save();
+    // testUser["_id"] = user._id;
   } catch (error) {
     console.error("error in creating user", error);
   }
@@ -49,6 +58,8 @@ describe("GET /admin user", () => {
     const url = "/admin/users";
     try {
       const result = await request(app).get(url);
+
+      console.log("result", result.body);
 
       // status check
       expect(result.status).toEqual(200);

@@ -2,7 +2,7 @@ const request = require("supertest");
 const app = require("../src");
 const mongoose = require("mongoose");
 const { dropAllCollections, removeAllCollections } = require("./helpers");
-jest.setTimeout(30000);
+jest.setTimeout(50000);
 
 const { User } = require("../src/db");
 const MONGO_TEST_URI = require("./user.test");
@@ -25,9 +25,13 @@ afterAll(async () => {
 
 beforeEach(async () => {
   try {
-    const newUser = new User(testUser);
-    const user = await newUser.save();
-    testUser["_id"] = user._id;
+    // Create user object to save
+    let newUser = new User(testUser);
+    const token = await newUser.getJWT();
+    newUser.token = token;
+    await newUser.save();
+    testUser["_id"] = newUser._id;
+    testUser["token"] = newUser.token;
   } catch (error) {
     console.error("error in creating user", error);
   }
