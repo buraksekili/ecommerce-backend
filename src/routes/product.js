@@ -41,6 +41,7 @@ productRouter.post("/api/product", async (req, res) => {
     });
 
     await newProduct.save();
+    res.send({ status: true, product: newProduct });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
@@ -48,8 +49,6 @@ productRouter.post("/api/product", async (req, res) => {
       .status(401)
       .send({ status: false, type: "VALIDATION", error: validationErr });
   }
-
-  res.send({ status: true });
 });
 
 // UPDATE product. Takes request body

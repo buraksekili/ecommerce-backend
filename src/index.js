@@ -18,16 +18,20 @@ app.use(morgan("dev"));
 app.use("/", signupRouter);
 app.use("/", loginRouter);
 app.use("/", productRouter);
-app.use("/admin", userRouter);
+app.use("/", userRouter);
 
 if (process.env.NODE_ENV !== "test") {
-  const MONGO_URI = `mongodb+srv://${
-    process.env.MONGO_USERNAME
-  }:${encodeURIComponent(
-    process.env.MONGO_PASSWORD
-  )}@cluster0.kyaly.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+  if (process.env.MONGODB_CLUSTER) {
+    const MONGO_URI = `mongodb+srv://${
+      process.env.MONGO_USERNAME
+    }:${encodeURIComponent(
+      process.env.MONGO_PASSWORD
+    )}@cluster0.kyaly.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
-  connectDB(MONGO_URI);
+    connectDB(MONGO_URI);
+  } else {
+    connectDB();
+  }
   app.listen(port, () => console.log("Server is running on", port));
 }
 
