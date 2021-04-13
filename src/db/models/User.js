@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    userType: { type: Number, default: 0 },
   },
   { versionKey: false }
 );

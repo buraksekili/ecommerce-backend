@@ -8,9 +8,11 @@ commentsRouter.put("/api/comments/:id", async (req, res) => {
   try {
     const { content, owner, approval } = req.body;
     const { id } = req.params;
+    if (!id) {
+      throw new Error(`invalid id ${id}`);
+    }
 
     const newComment = { content, owner, approval };
-
     const comment = await CommentModel.findByIdAndUpdate(id, {
       $set: newComment,
     });

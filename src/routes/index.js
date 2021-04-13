@@ -4,4 +4,5 @@ module.exports = {
   ...require("./product"),
   ...require("./user"),
   ...require("./comments"),
+  ...require("./manager"),
 };
