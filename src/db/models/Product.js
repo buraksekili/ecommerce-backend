@@ -6,7 +6,7 @@ const CommentSchema = new Schema(
   {
     content: { type: String },
     owner: { type: String },
-    approval: { type: Boolean},
+    approval: { type: Boolean, default: false },
   },
   { timestamps: { createdAt: "createdAt" } }
 );
@@ -53,7 +53,6 @@ const ProductSchema = new Schema(
   },
   { versionKey: false }
 );
-
 
 const Product = mongoose.model("Product", ProductSchema);
 module.exports = { Product, CommentModel };
