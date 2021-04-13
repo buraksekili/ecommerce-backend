@@ -17,6 +17,18 @@ userRouter.get("/admin/users", async (req, res) => {
   }
 });
 
+userRouter.get("/api/comments", async (req, res) => {
+  try {
+    const comments = await CommentModel.find({});
+    return res.send({ status: true, comments });
+  } catch (error) {
+    const validationErr = getErrors(error);
+    return res
+      .status(401)
+      .send({ status: false, type: "VALIDATION", error: validationErr });
+  }
+});
+
 userRouter.post("/api/comment", auth, async (req, res) => {
   try {
     const user = req.user;

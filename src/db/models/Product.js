@@ -6,6 +6,7 @@ const CommentSchema = new Schema(
   {
     content: { type: String },
     owner: { type: String },
+    approval: { type: Boolean},
   },
   { timestamps: { createdAt: "createdAt" } }
 );

@@ -132,9 +132,9 @@ productRouter.delete("/api/product/:id", async (req, res) => {
 });
 
 // GET all products
-productRouter.get("/api/getall/product", async (req, res) => {
+productRouter.get("/api/products", async (req, res) => {
   try {
-    const products = await Product.find({}); //Passing an empty object retrieve all product objects
+    const products = await Product.find({});
     return res.send({ status: true, products });
   } catch (error) {
     const validationErr = getErrors(error);
@@ -147,47 +147,23 @@ productRouter.get("/api/getall/product", async (req, res) => {
 
 // GET a product
 productRouter.get("/api/product/:id", async (req, res) => {
-
   const { id } = req.params;
 
-    if (!id) {
-      return res.status(401).send({
-        status: false,
-        type: "INVALID",
-        error: "Invalid request parameter, id",
-      });
-    }
+  if (!id) {
+    return res.status(401).send({
+      status: false,
+      type: "INVALID",
+      error: "Invalid request parameter, id",
+    });
+  }
 
   try {
-    // const products = await Product.findOne({categoryID: userGirdiginCategroy})
-
-    // find details of a product
     const products = await Product.findById(id); //Pass the id of the product that is wanted
 
-    
-    
-    // const products = await Product.findOne({categoryID: }); //Pass the id of the product that is wanted
-    
-    if(!products){
-      throw Error(`no product found ${id}` )
+    if (!products) {
+      throw Error(`no product found ${id}`);
     }
-    
-      return res.send({ status: true, products });
-  } catch (error) {
-    const validationErr = getErrors(error);
-    console.log(validationErr);
-    return res
-      .status(401)
-      .send({ status: false, type: "VALIDATION", error: validationErr });
-  }
-});
 
-productRouter.post("/api/rate/product", async (req, res) => {
-  try {
-    const {id, rate } = req.body
-    const products = await Product.findById(id); //Passing an empty object retrieve all product objects
-  // products.totalcount += rate
-  // products.rateCount += 1
     return res.send({ status: true, products });
   } catch (error) {
     const validationErr = getErrors(error);
@@ -198,5 +174,21 @@ productRouter.post("/api/rate/product", async (req, res) => {
   }
 });
 
+
+// productRouter.post("/api/rate/product", async (req, res) => {
+//   try {
+//     const { id, rate } = req.body;
+//     const products = await Product.findById(id); //Passing an empty object retrieve all product objects
+//     // products.totalcount += rate
+//     // products.rateCount += 1
+//     return res.send({ status: true, products });
+//   } catch (error) {
+//     const validationErr = getErrors(error);
+//     console.log(validationErr);
+//     return res
+//       .status(401)
+//       .send({ status: false, type: "VALIDATION", error: validationErr });
+//   }
+// });
 
 module.exports = { productRouter };
