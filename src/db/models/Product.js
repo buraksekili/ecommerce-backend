@@ -31,7 +31,10 @@ const ProductSchema = new Schema(
       type: Number,
       required: [true, "Category ID is required"],
     },
-    rate: {
+    rateCount: {
+      type: Number,
+    },
+    rateTotal: {
       type: Number,
     },
     stock: {
@@ -49,6 +52,7 @@ const ProductSchema = new Schema(
   },
   { versionKey: false }
 );
+
 
 const Product = mongoose.model("Product", ProductSchema);
 module.exports = { Product, CommentModel };

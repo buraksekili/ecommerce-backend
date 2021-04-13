@@ -24,15 +24,16 @@ userRouter.post("/api/comment", auth, async (req, res) => {
 
     // Create new comment and save it
     const comment = new CommentModel({ content, owner: user.username });
-    await comment.save();
 
     // Check the existence of the product
     const product = await Product.findById(productID);
     if (!product) {
       throw new Error("No product found with " + productID);
     }
+
     // Add comment into the product's comments array and save it
     product.comments.push(comment);
+    await comment.save();
     await product.save();
 
     return res.send({ status: true, comments: product.comments });
