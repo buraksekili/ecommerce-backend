@@ -159,14 +159,8 @@ productRouter.get("/api/product/:id", async (req, res) => {
     }
 
   try {
-    // const products = await Product.findOne({categoryID: userGirdiginCategroy})
 
-    // find details of a product
     const products = await Product.findById(id); //Pass the id of the product that is wanted
-
-    
-    
-    // const products = await Product.findOne({categoryID: }); //Pass the id of the product that is wanted
     
     if(!products){
       throw Error(`no product found ${id}` )
@@ -190,17 +184,16 @@ productRouter.get("/api/category/product/:category", async (req, res) => {
       return res.status(401).send({
         status: false,
         type: "INVALID",
-        error: "Invalid request parameter, id",
+        error: "Invalid request parameter, category",
       });
     }
 
   try {
-    // const products = await Product.findOne({categoryID: userGirdiginCategroy})
+  
+    const products = await Product.find({categoryID: category}); //Pass the category of the product that is wanted
+    console.log(products);
 
-    // find details of a product
-    const products = await Product.find({categoryID: category}); //Pass the id of the product that is wanted
-    
-    if(!products){
+    if(products.length == 0){
       throw Error(`no product found ${category}` )
     }
     
