@@ -1,6 +1,7 @@
 const express = require("express");
 const { User, Product } = require("../db/");
 const { getErrors, validateReqBody } = require("../helpers");
+const auth = require("./middlewares/auth");
 const managerRouter = express.Router();
 
 managerRouter.post("/signup", async (req, res) => {
@@ -43,7 +44,8 @@ managerRouter.post("/signup", async (req, res) => {
   }
 });
 
-managerRouter.put("/sm/product/:_id", async (req, res) => {
+managerRouter.put("/sm/product/:_id", auth, async (req, res) => {
+  const user = req.user;
   const { unitPrice, previousPrice } = req.body;
   const { _id } = req.params;
 
@@ -55,6 +57,9 @@ managerRouter.put("/sm/product/:_id", async (req, res) => {
     });
   }
   try {
+    if (!user || user.userType != 1) {
+      throw new Error("Invalid user authentication");
+    }
     let product;
     if (unitPrice && previousPrice) {
       product = await Product.findOneAndUpdate(_id, {
@@ -90,9 +95,10 @@ managerRouter.put("/sm/product/:_id", async (req, res) => {
   }
 });
 
-managerRouter.put("/pm/product/:_id", async (req, res) => {
+managerRouter.put("/pm/product/:_id", auth, async (req, res) => {
   const { stock } = req.body;
   const { _id } = req.params;
+  const user = req.user
 
   if (!_id || !stock) {
     return res.status(401).send({
@@ -102,11 +108,14 @@ managerRouter.put("/pm/product/:_id", async (req, res) => {
     });
   }
   try {
+    if (!user || user.userType != 2) {
+      throw new Error("Invalid user authentication");
+    }
     let product = await Product.findOneAndUpdate(_id, { stock });
     if (!product) {
       return res.status(404).send({ status: false, _id });
     }
-    product = {...product.toObject(), stock}
+    product = { ...product.toObject(), stock };
 
     return res.status(201).send({ status: true, product });
   } catch (error) {

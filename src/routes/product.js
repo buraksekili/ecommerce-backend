@@ -158,11 +158,10 @@ productRouter.get("/api/product/:id", async (req, res) => {
   }
 
   try {
-
     const products = await Product.findById(id); //Pass the id of the product that is wanted
-    
-    if(!products){
-      throw Error(`no product found ${id}` )
+
+    if (!products) {
+      throw Error(`no product found ${id}`);
     }
     return res.send({ status: true, products });
   } catch (error) {
@@ -175,28 +174,25 @@ productRouter.get("/api/product/:id", async (req, res) => {
 });
 
 productRouter.get("/api/category/product/:category", async (req, res) => {
-
   const { category } = req.params;
 
-    if (!category) {
-      return res.status(401).send({
-        status: false,
-        type: "INVALID",
-        error: "Invalid request parameter, id",
-      });
-    }
+  if (!category) {
+    return res.status(401).send({
+      status: false,
+      type: "INVALID",
+      error: "Invalid request parameter, id",
+    });
+  }
 
   try {
-    // const products = await Product.findOne({categoryID: userGirdiginCategroy})
-
     // find details of a product
-    const products = await Product.find({categoryID: category}); //Pass the id of the product that is wanted
-    
-    if(!products){
-      throw Error(`no product found ${category}` )
+    const products = await Product.find({ categoryID: category }); //Pass the id of the product that is wanted
+
+    if (!products) {
+      throw Error(`no product found ${category}`);
     }
-    
-      return res.send({ status: true, products });
+
+    return res.send({ status: true, products });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
@@ -205,6 +201,7 @@ productRouter.get("/api/category/product/:category", async (req, res) => {
       .send({ status: false, type: "VALIDATION", error: validationErr });
   }
 });
+
 // productRouter.post("/api/rate/product", async (req, res) => {
 //   try {
 //     const { id, rate } = req.body;
