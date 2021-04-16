@@ -6,6 +6,7 @@ const CommentSchema = new Schema(
   {
     content: { type: String },
     owner: { type: String },
+    approval: { type: Boolean, default: false },
   },
   { timestamps: { createdAt: "createdAt" } }
 );
@@ -31,12 +32,8 @@ const ProductSchema = new Schema(
       type: Number,
       required: [true, "Category ID is required"],
     },
-    rateCount: {
-      type: Number,
-    },
-    rateTotal: {
-      type: Number,
-    },
+    rateCount: { type: Number },
+    rateTotal: { type: Number },
     stock: {
       type: Number,
       required: [true, "Stock is required"],
@@ -45,14 +42,12 @@ const ProductSchema = new Schema(
       type: Number,
       required: [true, "Warranty is required"],
     },
-    comments: {
-      // type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-      type: [CommentSchema],
-    },
+    previousPrice: { type: Number },
+    comments: { type: [CommentSchema] },
+    // type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   },
   { versionKey: false }
 );
-
 
 const Product = mongoose.model("Product", ProductSchema);
 module.exports = { Product, CommentModel };

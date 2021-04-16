@@ -5,6 +5,8 @@ const {
   loginRouter,
   productRouter,
   userRouter,
+  commentsRouter,
+  managerRouter,
 } = require("./routes");
 const { connectDB } = require("./db");
 require("dotenv").config();
@@ -19,6 +21,8 @@ app.use("/", signupRouter);
 app.use("/", loginRouter);
 app.use("/", productRouter);
 app.use("/", userRouter);
+app.use("/", commentsRouter);
+app.use("/admin", managerRouter);
 
 if (process.env.NODE_ENV !== "test") {
   if (process.env.MONGODB_CLUSTER) {
