@@ -46,7 +46,16 @@ managerRouter.post("/signup", async (req, res) => {
 
 managerRouter.put("/sm/product/:_id", auth, async (req, res) => {
   const user = req.user;
-  const { unitPrice, previousPrice } = req.body;
+  const {
+    stock,
+    productName,
+    description,
+    unitPrice,
+    previousPrice,
+    categoryID,
+    warranty,
+    rate,
+  } = req.body;
   const { _id } = req.params;
 
   if (!_id) {
@@ -60,32 +69,31 @@ managerRouter.put("/sm/product/:_id", auth, async (req, res) => {
     if (!user || user.userType != 1) {
       throw new Error("Invalid user authentication");
     }
-    let product;
-    if (unitPrice && previousPrice) {
-      product = await Product.findOneAndUpdate(_id, {
-        unitPrice,
-        previousPrice,
-      });
-      product = { ...product.toObject(), unitPrice, previousPrice };
-    } else if (unitPrice && !previousPrice) {
-      product = await Product.findOneAndUpdate(_id, { unitPrice });
-      product = { ...product.toObject(), unitPrice };
-    } else if (!unitPrice && previousPrice) {
-      product = await Product.findOneAndUpdate(_id, { previousPrice });
-      product = { ...product.toObject(), previousPrice };
-    } else {
-      return res.status(401).send({
-        status: false,
-        type: "INVALID",
-        error: "invalid request body for salemanager",
-      });
-    }
 
+    const newProduct = {
+      stock,
+      productName,
+      description,
+      unitPrice,
+      previousPrice,
+      categoryID,
+      warranty,
+      rate,
+    };
+
+    let product = await Product.findById(_id);
     if (!product) {
       return res.status(404).send({ status: false, _id });
     }
 
-    return res.status(201).send({ status: true, product });
+    const productObj = product.toObject();
+    for (let i in newProduct) {
+      if (newProduct[i] != undefined) {
+        productObj[i] = newProduct[i];
+      }
+    }
+    await Product.findByIdAndUpdate(_id, productObj);
+    return res.status(201).send({ status: true, product: productObj });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
@@ -96,11 +104,19 @@ managerRouter.put("/sm/product/:_id", auth, async (req, res) => {
 });
 
 managerRouter.put("/pm/product/:_id", auth, async (req, res) => {
-  const { stock } = req.body;
+  const {
+    stock,
+    productName,
+    description,
+    unitPrice,
+    categoryID,
+    warranty,
+    rate,
+  } = req.body;
   const { _id } = req.params;
-  const user = req.user
+  const user = req.user;
 
-  if (!_id || !stock) {
+  if (!_id) {
     return res.status(401).send({
       status: false,
       type: "INVALID",
@@ -111,13 +127,31 @@ managerRouter.put("/pm/product/:_id", auth, async (req, res) => {
     if (!user || user.userType != 2) {
       throw new Error("Invalid user authentication");
     }
-    let product = await Product.findOneAndUpdate(_id, { stock });
+
+    const newProduct = {
+      stock,
+      productName,
+      description,
+      unitPrice,
+      categoryID,
+      warranty,
+      rate,
+    };
+
+    let product = await Product.findById(_id);
     if (!product) {
       return res.status(404).send({ status: false, _id });
     }
-    product = { ...product.toObject(), stock };
 
-    return res.status(201).send({ status: true, product });
+    const productObj = product.toObject();
+    for (let i in newProduct) {
+      if (newProduct[i] != undefined) {
+        productObj[i] = newProduct[i];
+      }
+    }
+    await Product.findByIdAndUpdate(_id, productObj);
+
+    return res.status(201).send({ status: true, product: productObj });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
