@@ -7,6 +7,7 @@ const {
   userRouter,
   commentsRouter,
   managerRouter,
+  cartRouter
 } = require("./routes");
 const { connectDB } = require("./db");
 require("dotenv").config();
@@ -22,6 +23,7 @@ app.use("/", loginRouter);
 app.use("/", productRouter);
 app.use("/", userRouter);
 app.use("/", commentsRouter);
+app.use("/", cartRouter);
 app.use("/admin", managerRouter);
 
 if (process.env.NODE_ENV !== "test") {

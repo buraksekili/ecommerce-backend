@@ -21,11 +21,9 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
-    token: {
-      type: String,
-      required: true,
-    },
+    token: { type: String },
     userType: { type: Number, default: 0 },
+    cart: [String],
   },
   { versionKey: false }
 );
