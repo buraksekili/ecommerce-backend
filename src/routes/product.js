@@ -51,60 +51,6 @@ productRouter.post("/api/product", async (req, res) => {
   }
 });
 
-// UPDATE product. Takes request body
-productRouter.post("/api/update/product", async (req, res) => {
-  const {
-    _id,
-    productName,
-    description,
-    unitPrice,
-    categoryID,
-    stock,
-    warranty,
-    rate,
-  } = req.body;
-
-  if (
-    !validateReqBody(
-      _id,
-      productName,
-      description,
-      unitPrice,
-      categoryID,
-      stock,
-      warranty,
-      rate
-    )
-  ) {
-    return res
-      .status(401)
-      .send({ status: false, type: "INVALID", error: "invalid request body" });
-  }
-  try {
-    const newProduct = new Product({
-      _id,
-      productName,
-      description,
-      unitPrice,
-      categoryID,
-      stock,
-      warranty,
-      rate,
-    });
-    const product = await Product.findByIdAndUpdate(_id, { $set: newProduct });
-    if (!product) {
-      return res.status(404).send({ status: false, _id });
-    }
-    return res.status(201).send({ status: true, product });
-  } catch (error) {
-    const validationErr = getErrors(error);
-    console.log(validationErr);
-    return res
-      .status(401)
-      .send({ status: false, type: "VALIDATION", error: validationErr });
-  }
-});
-
 // DELETE products.
 productRouter.delete("/api/product/:id", async (req, res) => {
   const { id } = req.params;
