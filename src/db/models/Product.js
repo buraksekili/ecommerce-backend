@@ -42,7 +42,7 @@ const ProductSchema = new Schema(
       type: Number,
       required: [true, "Warranty is required"],
     },
-    previousPrice: { type: Number },
+    previousPrice: { type: Number, default: 0 },
     comments: { type: [CommentSchema] },
     // type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   },

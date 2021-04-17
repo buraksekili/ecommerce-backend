@@ -13,6 +13,7 @@ productRouter.post("/api/product", async (req, res) => {
     categoryID,
     stock,
     warranty,
+    userType,
   } = req.body;
 
   if (
@@ -30,6 +31,10 @@ productRouter.post("/api/product", async (req, res) => {
       .send({ status: false, type: "INVALID", error: "invalid request body" });
   }
   try {
+    if (userType != 2) {
+      throw new Error("invalid user type");
+    }
+
     const newProduct = new Product({
       productName,
       description,
