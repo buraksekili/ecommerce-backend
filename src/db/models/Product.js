@@ -7,6 +7,7 @@ const CommentSchema = new Schema(
     content: { type: String },
     owner: { type: String },
     approval: { type: Boolean, default: false },
+    product: String,
   },
   { timestamps: { createdAt: "createdAt" } }
 );
@@ -43,8 +44,8 @@ const ProductSchema = new Schema(
       required: [true, "Warranty is required"],
     },
     previousPrice: { type: Number, default: 0 },
-    comments: { type: [CommentSchema] },
-    // type: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    // comments: { type: [CommentSchema] },
   },
   { versionKey: false }
 );
