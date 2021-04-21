@@ -1,6 +1,6 @@
 const express = require("express");
 const { Product } = require("../db/models/Product");
-const { validateReqBody, getErrors } = require("../helpers");
+const { validateReqBody, getErrors, getCommentsFromID } = require("../helpers");
 
 const productRouter = express.Router();
 
@@ -109,12 +109,17 @@ productRouter.get("/api/product/:id", async (req, res) => {
   }
 
   try {
-    const products = await Product.findById(id); //Pass the id of the product that is wanted
-
-    if (!products) {
+    let product = await Product.findById(id); //Pass the id of the product that is wanted
+    if (!product) {
       throw Error(`no product found ${id}`);
     }
-    return res.send({ status: true, products });
+    product = product.toObject();
+    const commentIDs = product.comments;
+    const comments = await getCommentsFromID(commentIDs);
+
+    product.comments = comments;
+
+    return res.send({ status: true, product });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);

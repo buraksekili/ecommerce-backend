@@ -1,6 +1,6 @@
 const express = require("express");
 const { Product, CommentModel } = require("../db/");
-const { getErrors } = require("../helpers");
+const { getErrors, getCommentsFromID } = require("../helpers");
 const auth = require("./middlewares/auth");
 const commentsRouter = express.Router();
 
@@ -26,13 +26,7 @@ commentsRouter.get("/api/comment/:pid", async (req, res) => {
     }
 
     const commentIDs = product.comments;
-    const comments = [];
-    for (cid of commentIDs) {
-      const comment = await CommentModel.findById(cid);
-      if (comment) {
-        comments.push(comment);
-      }
-    }
+    const comments = await getCommentsFromID(commentIDs);
     return res.send({ status: true, comments });
   } catch (error) {
     const validationErr = getErrors(error);
@@ -65,8 +59,9 @@ commentsRouter.post("/api/comment", auth, async (req, res) => {
     product.comments.push(comment);
     await comment.save();
     await product.save();
-
-    return res.send({ status: true, comments: product.comments });
+    const commentIDs = product.comments;
+    const comments = await getCommentsFromID(commentIDs);
+    return res.send({ status: true, comments });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log("ERROR", validationErr);
