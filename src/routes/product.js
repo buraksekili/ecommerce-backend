@@ -44,7 +44,7 @@ productRouter.post("/api/product", async (req, res) => {
       warranty,
       rate: 0,
       rateCount: 0,
-      rateTotal: 0
+      rateTotal: 0,
     });
 
     await newProduct.save();
@@ -164,7 +164,10 @@ productRouter.post("/api/rate/product", async (req, res) => {
   try {
     const { id, input_rate } = req.body;
     var aproduct = await Product.findById(id); //Passing an empty object retrieve all product objects
-    
+    if (!aproduct) {
+      throw new Error(`cannot find product ${id}`);
+    }
+
     var totalCount = aproduct.get("rateCount");
     totalCount += parseInt(input_rate);
 
@@ -176,54 +179,17 @@ productRouter.post("/api/rate/product", async (req, res) => {
     console.log("Total rate: ", totalRate);
 
     var overallRating = totalCount / totalRate;
-    
-    //aproduct.update(rateCount = totalCount, rateTotal = totalRate, rate = overallRating);
+    aproduct = aproduct.toObject();
 
-    //DELETE THE PRODUCT 
-    try {
-      const product = await Product.findByIdAndDelete(id);
-      if (!product) {
-        return res.status(404).send({ status: false, id });
-      }
-    } catch (error) {
-      const validationErr = getErrors(error);
-      console.log(validationErr);
-      return res
-        .status(401)
-        .send({ status: false, type: "VALIDATION", error: validationErr });
-    }
-    // ADD THE UPDATED PRODUCT
-    try {
-      const pname = aproduct.get("productName");
-      const descr = aproduct.get("description");
-      const price = aproduct.get("unitPrice");
-      const cid = aproduct.get("categoryID");
-      const stck = aproduct.get("stock");
-      const wrrnty = aproduct.get("warranty");
+    aproduct.rateCount = totalCount;
+    aproduct.rateTotal = totalRate;
+    aproduct.rate = overallRating;
 
-      const newProduct = new Product({
-        _id: id,
-        productName: pname,
-        description: descr,
-        unitPrice: price,
-        categoryID: cid,
-        stock: stck,
-        warranty: wrrnty,
-        rate: overallRating,
-        rateCount: totalCount,
-        rateTotal: totalRate
-      });
-  
-      await newProduct.save();
-      return res.send({ status: true, newProduct});
-    } catch (error) {
-      const validationErr = getErrors(error);
-      console.log(validationErr);
-      return res
-        .status(401)
-        .send({ status: false, type: "VALIDATION", error: validationErr });
-    }
+    const newProduct = await Product.findByIdAndUpdate(id, aproduct, {
+      new: true,
+    });
 
+    return res.send({ status: true, product: newProduct });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
