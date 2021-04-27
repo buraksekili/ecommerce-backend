@@ -43,6 +43,8 @@ productRouter.post("/api/product", async (req, res) => {
       stock,
       warranty,
       rate: 0,
+      rateCount: 0,
+      rateTotal: 0
     });
 
     await newProduct.save();
@@ -158,20 +160,77 @@ productRouter.get("/api/category/product/:category", async (req, res) => {
   }
 });
 
-// productRouter.post("/api/rate/product", async (req, res) => {
-//   try {
-//     const { id, rate } = req.body;
-//     const products = await Product.findById(id); //Passing an empty object retrieve all product objects
-//     // products.totalcount += rate
-//     // products.rateCount += 1
-//     return res.send({ status: true, products });
-//   } catch (error) {
-//     const validationErr = getErrors(error);
-//     console.log(validationErr);
-//     return res
-//       .status(401)
-//       .send({ status: false, type: "VALIDATION", error: validationErr });
-//   }
-// });
+productRouter.post("/api/rate/product", async (req, res) => {
+  try {
+    const { id, input_rate } = req.body;
+    var aproduct = await Product.findById(id); //Passing an empty object retrieve all product objects
+    
+    var totalCount = aproduct.get("rateCount");
+    totalCount += parseInt(input_rate);
+
+    console.log("Total count: ", totalCount);
+
+    var totalRate = aproduct.get("rateTotal");
+    totalRate += 1;
+
+    console.log("Total rate: ", totalRate);
+
+    var overallRating = totalCount / totalRate;
+    
+    //aproduct.update(rateCount = totalCount, rateTotal = totalRate, rate = overallRating);
+
+    //DELETE THE PRODUCT 
+    try {
+      const product = await Product.findByIdAndDelete(id);
+      if (!product) {
+        return res.status(404).send({ status: false, id });
+      }
+    } catch (error) {
+      const validationErr = getErrors(error);
+      console.log(validationErr);
+      return res
+        .status(401)
+        .send({ status: false, type: "VALIDATION", error: validationErr });
+    }
+    // ADD THE UPDATED PRODUCT
+    try {
+      const pname = aproduct.get("productName");
+      const descr = aproduct.get("description");
+      const price = aproduct.get("unitPrice");
+      const cid = aproduct.get("categoryID");
+      const stck = aproduct.get("stock");
+      const wrrnty = aproduct.get("warranty");
+
+      const newProduct = new Product({
+        _id: id,
+        productName: pname,
+        description: descr,
+        unitPrice: price,
+        categoryID: cid,
+        stock: stck,
+        warranty: wrrnty,
+        rate: overallRating,
+        rateCount: totalCount,
+        rateTotal: totalRate
+      });
+  
+      await newProduct.save();
+      return res.send({ status: true, newProduct});
+    } catch (error) {
+      const validationErr = getErrors(error);
+      console.log(validationErr);
+      return res
+        .status(401)
+        .send({ status: false, type: "VALIDATION", error: validationErr });
+    }
+
+  } catch (error) {
+    const validationErr = getErrors(error);
+    console.log(validationErr);
+    return res
+      .status(401)
+      .send({ status: false, type: "VALIDATION", error: validationErr });
+  }
+});
 
 module.exports = { productRouter };
