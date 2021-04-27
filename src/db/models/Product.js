@@ -33,8 +33,10 @@ const ProductSchema = new Schema(
       type: Number,
       required: [true, "Category ID is required"],
     },
-    rateCount: { type: Number },
-    rateTotal: { type: Number },
+    rateCount: { type: Number }, //Total point product got from its ratings --> 3+2+4+5...
+    rateTotal: { type: Number }, //How many people rated --> If 5 people rated, this value is 5
+    rate: {type: Number}, //       rateCount/rateTotal
+
     stock: {
       type: Number,
       required: [true, "Stock is required"],
