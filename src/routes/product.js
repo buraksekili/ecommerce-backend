@@ -1,9 +1,9 @@
 const express = require("express");
+
 const { Product } = require("../db/models/Product");
 const { validateReqBody, getErrors, getCommentsFromID } = require("../helpers");
 
 const productRouter = express.Router();
-
 // Create Product
 productRouter.post("/api/product", async (req, res) => {
   const {
@@ -14,6 +14,7 @@ productRouter.post("/api/product", async (req, res) => {
     stock,
     warranty,
     userType,
+    imagePath,
   } = req.body;
 
   if (
@@ -23,12 +24,15 @@ productRouter.post("/api/product", async (req, res) => {
       unitPrice,
       categoryID,
       stock,
-      warranty
+      warranty,
+      imagePath
     )
   ) {
-    return res
-      .status(401)
-      .send({ status: false, type: "INVALID", error: "invalid request body" });
+    return res.status(401).send({
+      status: false,
+      type: "INVALID",
+      error: "invalid request body",
+    });
   }
   try {
     if (userType != 2) {
@@ -45,6 +49,7 @@ productRouter.post("/api/product", async (req, res) => {
       rate: 0,
       rateCount: 0,
       rateTotal: 0,
+      imagePath,
     });
 
     await newProduct.save();

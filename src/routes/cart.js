@@ -32,9 +32,11 @@ cartRouter.post("/api/cart", auth, async (req, res) => {
   }
 });
 
-cartRouter.post("/api/cart/userless", (req, res) => {
-  const {cartIds} = req.body
+cartRouter.post("/api/cart/userless", async (req, res) => {
+  let { cartIds } = req.body;
   try {
+    cartIds = JSON.parse(cartIds);
+    cartIds = JSON.parse(cartIds);
 
     let products = [];
     for (let pid of cartIds) {
@@ -52,7 +54,7 @@ cartRouter.post("/api/cart/userless", (req, res) => {
       .status(401)
       .send({ status: false, type: "VALIDATION", error: validationErr });
   }
-})
+});
 
 // Add product specified with _id to the cart for authorized users.
 cartRouter.post("/api/cart/:_id", auth, async (req, res) => {
