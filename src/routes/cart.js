@@ -6,7 +6,7 @@ const auth = require("./middlewares/auth");
 
 const cartRouter = express.Router();
 
-cartRouter.get("/api/cart", auth, async (req, res) => {
+cartRouter.post("/api/cart", auth, async (req, res) => {
   const user = req.user;
 
   try {
@@ -31,6 +31,28 @@ cartRouter.get("/api/cart", auth, async (req, res) => {
       .send({ status: false, type: "VALIDATION", error: validationErr });
   }
 });
+
+cartRouter.post("/api/cart/userless", (req, res) => {
+  const {cartIds} = req.body
+  try {
+
+    let products = [];
+    for (let pid of cartIds) {
+      const prod = await Product.findById(pid);
+      if (prod) {
+        products.push(prod);
+      }
+    }
+
+    res.send({ status: true, cart: products });
+  } catch (error) {
+    const validationErr = getErrors(error);
+    console.log(validationErr);
+    return res
+      .status(401)
+      .send({ status: false, type: "VALIDATION", error: validationErr });
+  }
+})
 
 // Add product specified with _id to the cart for authorized users.
 cartRouter.post("/api/cart/:_id", auth, async (req, res) => {
