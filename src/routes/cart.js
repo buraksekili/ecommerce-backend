@@ -128,6 +128,15 @@ cartRouter.delete("/api/cart/:_id", auth, async (req, res) => {
     await User.findByIdAndUpdate(user._id, u);
     delete u.password;
 
+    let products = [];
+    for (let pid of u.cart) {
+      const prod = await Product.findById(pid);
+      if (prod) {
+        products.push(prod);
+      }
+    }
+    u.products = products;
+
     res.send({ status: true, user: u });
   } catch (error) {
     const validationErr = getErrors(error);
