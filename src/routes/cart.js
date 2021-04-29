@@ -32,7 +32,8 @@ cartRouter.post("/api/cart", auth, async (req, res) => {
   }
 });
 
-cartRouter.post("/api/cart/userless", async (req, res) => {
+// Return products in the cart of the user who is not logged in.
+cartRouter.post("/api/userless/cart", async (req, res) => {
   let { cartIds } = req.body;
   try {
     cartIds = JSON.parse(cartIds);

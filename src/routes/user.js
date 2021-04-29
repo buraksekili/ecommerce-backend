@@ -45,6 +45,11 @@ userRouter.put("/api/user/:id", async (req, res) => {
     const salt = await bcrypt.genSalt(8);
     userObj.password = await bcrypt.hash(userObj.password, salt);
     userObj = await User.findByIdAndUpdate(id, userObj, { new: true });
+    if (!userObj) {
+      throw new Error(`cannot find user ${id}`);
+    }
+    userObj = userObj.toObject();
+    delete userObj.password;
     res.send({ status: true, user: userObj });
   } catch (error) {
     const validationErr = getErrors(error);

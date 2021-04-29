@@ -6,7 +6,7 @@ const managerRouter = express.Router();
 
 managerRouter.post("/signup", async (req, res) => {
   const { userEmail, password, username, userType } = req.body;
-  if (userType <= 0 || userType > 2) {
+  if (userType == undefined || userType <= 0 || userType > 2) {
     return res
       .status(401)
       .send({ status: false, type: "INVALID", error: "invalid userType" });
