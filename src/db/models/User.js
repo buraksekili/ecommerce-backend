@@ -28,6 +28,7 @@ const UserSchema = new Schema(
     taxID: { type: String, default: "" },
     userType: { type: Number, default: 0 },
     cart: [String],
+    rates: [{ type: Schema.Types.ObjectId, ref: "Rate" }],
     orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
     // orders: [OrderSchema],
   },

@@ -34,9 +34,9 @@ const ProductSchema = new Schema(
       required: [true, "Category ID is required"],
     },
     imagePath: { type: String, default: "" },
-    rateCount: { type: Number, default: 0 }, //Total point product got from its ratings --> 3+2+4+5...
-    rateTotal: { type: Number, default: 0 }, //How many people rated --> If 5 people rated, this value is 5
-    rate: { type: Number, default: 0 }, //       rateCount/rateTotal
+    rateCount: { type: Number, default: 0 },  //  Total point product got from its ratings --> 3+2+4+5...
+    rateTotal: { type: Number, default: 0 },  //  How many people rated --> If 5 people rated, this value is 5
+    rate: { type: Number, default: 0 },       //  rateCount/rateTotal
     stock: {
       type: Number,
       required: [true, "Stock is required"],

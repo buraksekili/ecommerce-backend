@@ -72,6 +72,7 @@ ${address}\n\n`;
     for (let pid of orders) {
       const prod = await Product.findById(pid);
       if (prod) {
+        prod.stock -= 1
         products.push(prod);
         totalPrice += prod.unitPrice;
         mailText += `${prod.productName} - http://localhost:3000/product/${prod._id}\n${prod.unitPrice}$\n`;

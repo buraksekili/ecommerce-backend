@@ -1,7 +1,9 @@
 const express = require("express");
+const { Rate, User } = require("../db");
 
 const { Product } = require("../db/models/Product");
 const { validateReqBody, getErrors, getCommentsFromID } = require("../helpers");
+const auth = require("./middlewares/auth");
 
 const productRouter = express.Router();
 // Create Product
@@ -165,27 +167,48 @@ productRouter.get("/api/category/product/:category", async (req, res) => {
   }
 });
 
-productRouter.post("/api/rate/product", async (req, res) => {
+productRouter.post("/api/rate/product", auth, async (req, res) => {
   try {
     const { id, input_rate } = req.body;
-    var aproduct = await Product.findById(id); //Passing an empty object retrieve all product objects
+    const user = req.user;
+
+    let newRate = new Rate({
+      userID: user._id,
+      productID: id,
+      rate: input_rate,
+    });
+
+    let prevRate = 0;
+    let isFound = false;
+    for (ur of user.rates) {
+      const ratedProd = await Rate.findById(ur);
+      if (ratedProd && ratedProd.productID === id) {
+        prevRate = ratedProd.rate;
+        ratedProd.rate = input_rate;
+        await Rate.findByIdAndUpdate(ur, ratedProd, { new: true });
+        isFound = true;
+      }
+    }
+
+    let aproduct = await Product.findById(id);
     if (!aproduct) {
       throw new Error(`cannot find product ${id}`);
     }
 
-    var totalCount = aproduct.get("rateCount");
-    totalCount += parseInt(input_rate);
+    let totalCount = aproduct.get("rateCount");
+    let totalRate = aproduct.get("rateTotal");
+    let overallRating;
+    if (!isFound) {
+      user.rates.push(newRate._id);
+      totalCount += parseInt(input_rate);
+      totalRate += 1;
+      overallRating = totalCount / totalRate;
+    } else {
+      totalCount = totalCount + (input_rate - prevRate);
+      overallRating = totalCount / totalRate;
+    }
 
-    console.log("Total count: ", totalCount);
-
-    var totalRate = aproduct.get("rateTotal");
-    totalRate += 1;
-
-    console.log("Total rate: ", totalRate);
-
-    var overallRating = totalCount / totalRate;
     aproduct = aproduct.toObject();
-
     aproduct.rateCount = totalCount;
     aproduct.rateTotal = totalRate;
     aproduct.rate = overallRating;
@@ -193,7 +216,11 @@ productRouter.post("/api/rate/product", async (req, res) => {
     const newProduct = await Product.findByIdAndUpdate(id, aproduct, {
       new: true,
     });
+    await User.findByIdAndUpdate(user._id, user, { new: true });
 
+    if (!isFound) {
+      newRate.save();
+    }
     return res.send({ status: true, product: newProduct });
   } catch (error) {
     const validationErr = getErrors(error);
