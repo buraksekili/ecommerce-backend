@@ -29,7 +29,7 @@ orderRouter.get("/api/orders/:id", async (req, res) => {
     }
     user = user.toObject();
     const orders = user.orders;
-    
+
     // Obtain details of order (status and produc fields)
     const details = [];
     for (order of orders) {
@@ -50,10 +50,8 @@ orderRouter.get("/api/orders/:id", async (req, res) => {
 });
 
 // Add product to order of the user specified by req.body.token
-orderRouter.post("/api/order/:pid", auth, async (req, res) => {
+orderRouter.post("/api/order", auth, async (req, res) => {
   try {
-    // Obtain product id as pid and userId from token
-    const { pid } = req.params;
     const { address } = req.body;
     const userId = req.user._id;
     const orders = req.user.cart;
@@ -99,7 +97,7 @@ orderRouter.post("/api/order/:pid", auth, async (req, res) => {
 });
 
 // Update the order
-orderRouter.put("/api/order/:oid", auth, async (req, res) => {
+orderRouter.put("/api/order/:oid", async (req, res) => {
   try {
     const oid = req.params.oid;
     const status = req.body.status;
@@ -137,22 +135,15 @@ orderRouter.delete("/api/order/:oid", auth, async (req, res) => {
 
     // Get user
     let user = await User.findById(req.user._id);
-    user = user.toObject();
-
     // Delete order from its orders.
     const orders = user.orders;
     const updatedOrders = orders.filter((order) => {
       return order._id != oid;
     });
-    // Check if order is deleted successfully.
-    if (orders.length == updatedOrders) {
-      throw new Error(`cannot find order with ${oid}`);
-    }
-
     // update user.orders and save it
     user.orders = updatedOrders;
-    const updated = await User.findByIdAndUpdate(user._id, user, { new: true });
-    res.send({ status: true });
+    await User.findByIdAndUpdate(user._id, user, { new: true });
+    res.send({ status: true, orders: updatedOrders });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
