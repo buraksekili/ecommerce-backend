@@ -5,7 +5,10 @@ Your `.env` file's format must be the same as following;
 
 ```
 MONGO_USERNAME=username
-MONGO_PASSWORD=yourpassword
+MONGO_PASSWORD=<yourpassword>
+JWT_SECRET=anysecretisOK
+EMAIL_ADDR=<EMAIL_ADDR>
+EMAIL_PASS=<EMAIL_ADDRpassword>
 ```
 
 

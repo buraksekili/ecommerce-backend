@@ -3,6 +3,7 @@ const { User, Product, Order } = require("../db/");
 const { getErrors } = require("../helpers");
 const auth = require("./middlewares/auth");
 const orderRouter = express.Router();
+const { sendMail } = require("../mail");
 
 // Returns all orders with its details
 orderRouter.get("/api/orders", async (req, res) => {
@@ -62,12 +63,22 @@ orderRouter.post("/api/order", auth, async (req, res) => {
     }
 
     let products = [];
+    let mailText = `Hey ${req.user.username}! Thank you for your purchase :)\n
+    \n
+    You can find your order details below. \n\n
+${req.user.userEmail}
+${address}\n\n`;
+    let totalPrice = 0;
     for (let pid of orders) {
       const prod = await Product.findById(pid);
       if (prod) {
         products.push(prod);
+        totalPrice += prod.unitPrice;
+        mailText += `${prod.productName} - http://localhost:3000/product/${prod._id}\n${prod.unitPrice}$\n`;
       }
     }
+
+    mailText += `Total ${totalPrice}$\n\n`;
 
     // Create new order
     const newOrder = new Order({
@@ -86,6 +97,8 @@ orderRouter.post("/api/order", auth, async (req, res) => {
     // Save updated user and new order.
     user = await User.findByIdAndUpdate(userId, user, { new: true });
     await newOrder.save();
+
+    sendMail(user.userEmail, `Your Order from BasketStore`, mailText);
 
     res.send({ status: true, orders: user.toObject().orders });
   } catch (error) {

@@ -2,8 +2,6 @@ const express = require("express");
 const { User } = require("../db/");
 const { getErrors } = require("../helpers");
 const userRouter = express.Router();
-const { validateReqBody } = require("../helpers");
-const auth = require("./middlewares/auth");
 const bcrypt = require("bcrypt");
 
 // Get a user based on user id
