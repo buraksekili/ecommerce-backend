@@ -5,7 +5,7 @@ const { validateReqBody, getErrors } = require("../helpers");
 const signupRouter = express.Router();
 
 signupRouter.post("/api/signup", async (req, res) => {
-  const { userEmail, password, username, userType } = req.body;
+  const { userEmail, password, username, userType, address } = req.body;
 
   if (!validateReqBody(userEmail, password, username)) {
     return res
@@ -17,9 +17,9 @@ signupRouter.post("/api/signup", async (req, res) => {
     // Create user object to save
     let newUser;
     if (typeof userType === "number") {
-      newUser = new User({ userEmail, password, username, userType });
+      newUser = new User({ userEmail, password, username, address, userType });
     } else {
-      newUser = new User({ userEmail, password, username });
+      newUser = new User({ userEmail, password, username, address });
     }
 
     // Get JWT for the user and update token field of the new user.

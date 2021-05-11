@@ -24,6 +24,8 @@ const UserSchema = new Schema(
       unique: true,
     },
     token: { type: String },
+    address: { type: String, default: "" },
+    taxID: { type: String, default: "" },
     userType: { type: Number, default: 0 },
     cart: [String],
     orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],

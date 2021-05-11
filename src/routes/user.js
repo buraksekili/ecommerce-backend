@@ -28,14 +28,14 @@ userRouter.get("/api/user/:_id", async (req, res) => {
 
 // Update user.
 userRouter.put("/api/user/:id", async (req, res) => {
-  const { userEmail, password, username } = req.body;
+  const { userEmail, password, username, address } = req.body;
   const { id } = req.params;
   try {
     const user = await User.findById(id);
     if (!user) {
       throw new Error(`no such a user ${id}`);
     }
-    const updated = { userEmail, password, username };
+    const updated = { userEmail, password, username, address };
     let userObj = user.toObject();
     for (let i in updated) {
       if (updated[i] != undefined) {
