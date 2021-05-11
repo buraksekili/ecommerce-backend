@@ -1,10 +1,14 @@
 const mongoose = require("mongoose");
 const { ProductSchema } = require("./Product");
+const { User } = require("./User");
+
 const Schema = mongoose.Schema;
 const OrderSchema = new Schema(
   {
-    product: ProductSchema,
-    status: Boolean,
+    products: [ProductSchema], // Holds array of product
+    status: Number, // Indicates status of the order
+    address: String, // Address of the delivery address.
+    customer: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { versionKey: false }
 );

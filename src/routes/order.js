@@ -29,7 +29,7 @@ orderRouter.get("/api/orders/:id", async (req, res) => {
     }
     user = user.toObject();
     const orders = user.orders;
-
+    
     // Obtain details of order (status and produc fields)
     const details = [];
     for (order of orders) {
@@ -54,20 +54,30 @@ orderRouter.post("/api/order/:pid", auth, async (req, res) => {
   try {
     // Obtain product id as pid and userId from token
     const { pid } = req.params;
+    const { address } = req.body;
     const userId = req.user._id;
-    const orders = req.user.orders;
+    const orders = req.user.cart;
+
+    // const orders = req.user.orders;
     if (!Array.isArray(orders)) {
       throw new Error("invalid user orders.");
     }
 
-    // Check if product exists
-    const product = await Product.findById(pid);
-    if (!product) {
-      throw new Error(`no such a product ${pid}`);
+    let products = [];
+    for (let pid of orders) {
+      const prod = await Product.findById(pid);
+      if (prod) {
+        products.push(prod);
+      }
     }
 
     // Create new order
-    const newOrder = new Order({ product: product, status: true });
+    const newOrder = new Order({
+      products,
+      status: 0,
+      address,
+      customer: userId,
+    });
 
     // Push new order to the user's 'orders'
     // User is obtained through JWT token.
