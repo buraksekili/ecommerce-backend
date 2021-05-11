@@ -81,6 +81,7 @@ orderRouter.post("/api/order", auth, async (req, res) => {
     // User is obtained through JWT token.
     let user = req.user;
     user.orders.push(newOrder);
+    user.cart = [];
 
     // Save updated user and new order.
     user = await User.findByIdAndUpdate(userId, user, { new: true });
