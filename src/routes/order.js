@@ -3,7 +3,7 @@ const { User, Product, Order } = require("../db/");
 const { getErrors } = require("../helpers");
 const auth = require("./middlewares/auth");
 const orderRouter = express.Router();
-const { sendMail } = require("../mail");
+const { sendMail, generatePDF } = require("../mail");
 
 // Returns all orders with its details
 orderRouter.get("/api/orders", async (req, res) => {
@@ -62,24 +62,41 @@ orderRouter.post("/api/order", auth, async (req, res) => {
       throw new Error("invalid user orders.");
     }
 
-    let products = [];
-    let mailText = `Hey ${req.user.username}! Thank you for your purchase :)\n
-    \n
+    // Initialize text to send via mail
+    let mailText =
+      (toPDF = `Hey ${req.user.username}! Thank you for your purchase :)\n
     You can find your order details below. \n\n
 ${req.user.userEmail}
-${address}\n\n`;
+${address}\n\n`);
+
+    let products = [];
+    let PDFOrders = [];
+    let PDFOrder = {};
     let totalPrice = 0;
+    let count = 0;
+    const productURL = "http://localhost:3000/product/";
     for (let pid of orders) {
       const prod = await Product.findById(pid);
       if (prod) {
-        prod.stock -= 1
+        count++;
+        prod.stock -= 1;
+
+        PDFOrder = {
+          unitPrice: prod.unitPrice,
+          URL: `${productURL}${prod._id}`,
+          productName: prod.productName,
+          count,
+        };
+        PDFOrders.push(PDFOrder);
+
         products.push(prod);
         totalPrice += prod.unitPrice;
-        mailText += `${prod.productName} - http://localhost:3000/product/${prod._id}\n${prod.unitPrice}$\n`;
+        mailText += `${count}- ${prod.productName} - ${PDFOrder.URL}\n${prod.unitPrice}$\n\n`;
       }
     }
 
-    mailText += `Total ${totalPrice}$\n\n`;
+    PDFOrders.push(totalPrice);
+    mailText += `\nTotal ${totalPrice}$\n\n`;
 
     // Create new order
     const newOrder = new Order({
@@ -99,7 +116,22 @@ ${address}\n\n`;
     user = await User.findByIdAndUpdate(userId, user, { new: true });
     await newOrder.save();
 
-    sendMail(user.userEmail, `Your Order from BasketStore`, mailText);
+    // Generate file name for the PDF file that will store the information about given order as;
+    // <user_email>'<order_unique_id>.pdf
+    const PDFFileName = `${req.user.userEmail}'${newOrder._id}.pdf`;
+    const PDFFilePath = generatePDF(
+      PDFFileName,
+      toPDF,
+      `Order Summary`,
+      mailText,
+      PDFOrders
+    );
+    sendMail(
+      user.userEmail,
+      `Your Order from BasketStore`,
+      mailText,
+      PDFFilePath
+    );
 
     res.send({ status: true, orders: user.toObject().orders });
   } catch (error) {

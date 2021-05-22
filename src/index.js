@@ -1,5 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
+const fs = require("fs");
+const path = require("path");
 const {
   signupRouter,
   loginRouter,
@@ -14,7 +16,6 @@ const { connectDB } = require("./db");
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(morgan("dev"));
 
@@ -28,6 +29,15 @@ app.use("/", cartRouter);
 app.use("/", orderRouter);
 app.use("/admin", managerRouter);
 
+try {
+  if (!fs.existsSync(path.join(__dirname, "../orders"))) {
+    fs.mkdirSync(path.join(__dirname, "../orders"));
+  }
+} catch {
+  console.log("Orders folder already set up.");
+}
+
+const port = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== "test") {
   if (process.env.MONGODB_LOCAL) {
     connectDB();
