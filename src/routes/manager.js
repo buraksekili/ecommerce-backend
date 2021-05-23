@@ -96,8 +96,14 @@ managerRouter.put("/sm/product/:_id", auth, async (req, res) => {
     await Product.findByIdAndUpdate(_id, productObj);
 
     if (previousPrice > 0) {
-      mailText = `Discount on ${product.productName} is started!\n\n` 
-      sendMail(user.userEmail, `Discount on ${product.productName}`, mailText);
+      mailText = `Discount on ${product.productName} is started!\n\n`;
+      for (uid of product.registeredUser) {
+        let user_ = await User.findById(uid);
+        if (user_) {
+          user_ = user_.userEmail;
+        }
+        sendMail(user_, `Discount on ${product.productName}`, mailText);
+      }
     }
 
     return res.status(201).send({ status: true, product: productObj });
