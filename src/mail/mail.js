@@ -8,19 +8,21 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendMail = (to, subject, text, PDFFilePath) => {
-  const options = {
+  let options = {
     from: EMAIL_ADDR,
     to,
     subject,
     text,
-    attachments: [
+  };
+  if (PDFFilePath) {
+    options["attachments"] = [
       {
         filename: "order.pdf",
         path: PDFFilePath,
         contentType: "application/pdf",
       },
-    ],
-  };
+    ];
+  }
   transporter.sendMail(options, function (err, info) {
     if (err) {
       console.log(err);
