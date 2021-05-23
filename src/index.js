@@ -11,6 +11,7 @@ const {
   managerRouter,
   cartRouter,
   orderRouter,
+  registerRouter,
 } = require("./routes");
 const { connectDB } = require("./db");
 require("dotenv").config();
@@ -27,6 +28,7 @@ app.use("/", userRouter);
 app.use("/", commentsRouter);
 app.use("/", cartRouter);
 app.use("/", orderRouter);
+app.use("/", registerRouter);
 app.use("/admin", managerRouter);
 
 try {

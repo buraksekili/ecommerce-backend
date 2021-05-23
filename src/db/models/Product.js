@@ -47,6 +47,7 @@ const ProductSchema = new Schema(
     },
     previousPrice: { type: Number, default: 0 },
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    registeredUser: [{ type: Schema.Types.ObjectId, ref: "User" }],
     // comments: { type: [CommentSchema] },
   },
   { versionKey: false }
