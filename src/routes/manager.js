@@ -1,6 +1,7 @@
 const express = require("express");
 const { User, Product } = require("../db/");
 const { getErrors, validateReqBody } = require("../helpers");
+const { sendMail } = require("../mail");
 const auth = require("./middlewares/auth");
 const managerRouter = express.Router();
 
@@ -93,6 +94,12 @@ managerRouter.put("/sm/product/:_id", auth, async (req, res) => {
       }
     }
     await Product.findByIdAndUpdate(_id, productObj);
+
+    if (previousPrice > 0) {
+      mailText = `Discount on ${product.productName} is started!\n\n` 
+      sendMail(user.userEmail, `Discount on ${product.productName}`, mailText);
+    }
+
     return res.status(201).send({ status: true, product: productObj });
   } catch (error) {
     const validationErr = getErrors(error);

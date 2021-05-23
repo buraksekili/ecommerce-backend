@@ -7,4 +7,5 @@ module.exports = {
   ...require("./manager"),
   ...require("./cart"),
   ...require("./order"),
+  ...require("./discount-register"),
 };
