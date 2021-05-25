@@ -98,14 +98,21 @@ ${address}\n\n`);
     PDFOrders.push(totalPrice);
     mailText += `\nTotal ${totalPrice}$\n\n`;
 
+
+    var datetime = new Date();
+    datetime = datetime.toISOString().slice(0,10)
+    console.log(datetime);
+
     // Create new order
     const newOrder = new Order({
       products,
       status: 0,
       address,
       customer: userId,
+      date: datetime,
     });
 
+    
     // Push new order to the user's 'orders'
     // User is obtained through JWT token.
     let user = req.user;
