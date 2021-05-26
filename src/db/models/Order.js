@@ -10,6 +10,7 @@ const OrderSchema = new Schema(
     address: String, // Address of the delivery address.
     customer: [{ type: Schema.Types.ObjectId, ref: "User" }],
     refund: {type: Boolean, default: false},
+    date: {type: String, default: ""}
   },
   { versionKey: false }
 );
