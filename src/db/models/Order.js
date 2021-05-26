@@ -9,6 +9,7 @@ const OrderSchema = new Schema(
     status: Number, // Indicates status of the order
     address: String, // Address of the delivery address.
     customer: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    refund: {type: Boolean, default: false},
   },
   { versionKey: false }
 );
