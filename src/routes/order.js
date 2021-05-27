@@ -98,9 +98,8 @@ ${address}\n\n`);
     PDFOrders.push(totalPrice);
     mailText += `\nTotal ${totalPrice}$\n\n`;
 
-
     var datetime = new Date();
-    datetime = datetime.toISOString().slice(0,10)
+    datetime = datetime.toISOString().slice(0, 10);
     console.log(datetime);
 
     // Create new order
@@ -112,7 +111,6 @@ ${address}\n\n`);
       date: datetime,
     });
 
-    
     // Push new order to the user's 'orders'
     // User is obtained through JWT token.
     let user = req.user;
@@ -181,6 +179,14 @@ orderRouter.put("/api/refund/:oid", async (req, res) => {
   try {
     const oid = req.params.oid;
     const refund = req.body.refund;
+
+    const order = await Order.findById(oid);
+    if (!order) {
+      throw new Error(`cannot find order ${oid}`);
+    }
+    if (order.refund) {
+      throw new Error(`order ${oid} is already refunded`);
+    }
 
     // Update order based on its ID.
     const newOrder = await Order.findByIdAndUpdate(
