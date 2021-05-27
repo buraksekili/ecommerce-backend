@@ -184,7 +184,7 @@ orderRouter.put("/api/refund/:oid", async (req, res) => {
     if (!order) {
       throw new Error(`cannot find order ${oid}`);
     }
-    if (order.refund) {
+    if (order.refund === 2) {
       throw new Error(`order ${oid} is already refunded`);
     }
     
@@ -216,7 +216,7 @@ orderRouter.get("/api/refunds", async (req, res) => {
     const orders = await Order.find({});
     const refunds = [];
     for (order of orders) {
-      if (order && order.refund) {
+      if (order && order.refund !== 0) {
         refunds.push(order);
       }
     }
@@ -232,7 +232,7 @@ orderRouter.get("/api/refunds", async (req, res) => {
 });
 
 // Delete the order
-orderRouter.delete("/api/order/:oid", auth, async (req, res) => {
+orderRouter.post("/api/order/:oid", auth, async (req, res) => {
   try {
     const oid = req.params.oid;
 
