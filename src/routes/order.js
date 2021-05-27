@@ -98,12 +98,17 @@ ${address}\n\n`);
     PDFOrders.push(totalPrice);
     mailText += `\nTotal ${totalPrice}$\n\n`;
 
+    var datetime = new Date();
+    datetime = datetime.toISOString().slice(0, 10);
+    console.log(datetime);
+
     // Create new order
     const newOrder = new Order({
       products,
       status: 0,
       address,
       customer: userId,
+      date: datetime,
     });
 
     // Push new order to the user's 'orders'
@@ -160,6 +165,63 @@ orderRouter.put("/api/order/:oid", async (req, res) => {
     }
 
     res.send({ status: true, order: newOrder });
+  } catch (error) {
+    const validationErr = getErrors(error);
+    console.log(validationErr);
+    return res
+      .status(401)
+      .send({ status: false, type: "VALIDATION", error: validationErr });
+  }
+});
+
+// refund the order
+orderRouter.put("/api/refund/:oid", async (req, res) => {
+  try {
+    const oid = req.params.oid;
+    const refund = req.body.refund;
+
+    const order = await Order.findById(oid);
+    if (!order) {
+      throw new Error(`cannot find order ${oid}`);
+    }
+    if (order.refund) {
+      throw new Error(`order ${oid} is already refunded`);
+    }
+
+    // Update order based on its ID.
+    const newOrder = await Order.findByIdAndUpdate(
+      oid,
+      { refund },
+      { new: true }
+    );
+    if (!newOrder) {
+      throw new Error(`cannot find order ${oid}`);
+    }
+
+    res.send({ status: true, order: newOrder });
+  } catch (error) {
+    const validationErr = getErrors(error);
+    console.log(validationErr);
+    return res
+      .status(401)
+      .send({ status: false, type: "VALIDATION", error: validationErr });
+  }
+});
+
+// get all refunded order
+orderRouter.get("/api/refunds", async (req, res) => {
+  try {
+    // Update order based on its ID.
+
+    const orders = await Order.find({});
+    const refunds = [];
+    for (order of orders) {
+      if (order && order.refund) {
+        refunds.push(order);
+      }
+    }
+
+    res.send({ status: true, refunds });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);

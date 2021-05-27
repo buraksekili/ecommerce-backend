@@ -216,6 +216,7 @@ productRouter.post("/api/rate/product", auth, async (req, res) => {
     const newProduct = await Product.findByIdAndUpdate(id, aproduct, {
       new: true,
     });
+    
     await User.findByIdAndUpdate(user._id, user, { new: true });
 
     if (!isFound) {
