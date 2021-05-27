@@ -90,6 +90,7 @@ ${address}\n\n`);
         PDFOrders.push(PDFOrder);
 
         products.push(prod);
+        prod.save();
         totalPrice += prod.unitPrice;
         mailText += `${count}- ${prod.productName} - ${PDFOrder.URL}\n${prod.unitPrice}$\n\n`;
       }
@@ -187,7 +188,11 @@ orderRouter.put("/api/refund/:oid", async (req, res) => {
     if (order.refund === 2) {
       throw new Error(`order ${oid} is already refunded`);
     }
-    
+    let customer = order.customer;
+    if (customer) {
+      customer = order.customer[0];
+    }
+    const c = await User.findById(customer);
     // Update order based on its ID.
     const newOrder = await Order.findByIdAndUpdate(
       oid,
@@ -197,7 +202,7 @@ orderRouter.put("/api/refund/:oid", async (req, res) => {
     if (!newOrder) {
       throw new Error(`cannot find order ${oid}`);
     }
-
+    newOrder.customer = c;
     res.send({ status: true, order: newOrder });
   } catch (error) {
     const validationErr = getErrors(error);
@@ -215,8 +220,15 @@ orderRouter.get("/api/refunds", async (req, res) => {
 
     const orders = await Order.find({});
     const refunds = [];
-    for (order of orders) {
+    for (let order of orders) {
       if (order && order.refund !== 0) {
+        let customer = order.customer;
+        if (customer) {
+          customer = order.customer[0];
+        }
+        const c = await User.findById(customer);
+        order = order.toObject();
+        order["customer"] = c;
         refunds.push(order);
       }
     }
