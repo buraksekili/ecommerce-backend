@@ -1,4 +1,5 @@
 const express = require("express");
+const moment = require("moment"); // require
 const { User, Product, Order } = require("../db/");
 const { getErrors } = require("../helpers");
 const auth = require("./middlewares/auth");
@@ -10,6 +11,62 @@ orderRouter.get("/api/orders", async (req, res) => {
   try {
     const orders = await Order.find({});
     res.send({ status: true, orders });
+  } catch (error) {
+    const validationErr = getErrors(error);
+    console.log(validationErr);
+    return res
+      .status(401)
+      .send({ status: false, type: "VALIDATION", error: validationErr });
+  }
+});
+
+// Generates pdf for order with id: oid
+orderRouter.get("/api/pdf/:oid", async (req, res) => {
+  try {
+    const { oid } = req.params;
+    const order = await Order.findById(oid);
+
+    if (!order) {
+      throw new Error(`no order ${oid}`);
+    }
+
+    res.send({ status: true, orders: details });
+  } catch (error) {
+    const validationErr = getErrors(error);
+    console.log(validationErr);
+    return res
+      .status(401)
+      .send({ status: false, type: "VALIDATION", error: validationErr });
+  }
+});
+
+// Takes start and end date, returns orders in this date range.
+orderRouter.get("/api/range", async (req, res) => {
+  try {
+    const { start, end } = req.body;
+    if (!start || !end) {
+      throw new Error(`invalid start: ${start} or end: ${end}`);
+    }
+
+    let startDate = new Date(start);
+    let endDate = new Date(end);
+    console.log(`start: ${startDate}\nend: ${endDate}`);
+
+    const orders = await Order.find({});
+    const validOrders = [];
+    for (order of orders) {
+      if (order && order.date) {
+        if (
+          moment(startDate).isBefore(order.date) &&
+          moment(endDate).isAfter(order.date)
+        ) {
+          validOrders.push(order);
+        } else {
+          console.log("date zort: ", order.date);
+        }
+      }
+    }
+    res.send({ status: true, orders: validOrders });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
