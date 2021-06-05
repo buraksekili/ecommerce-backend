@@ -5,7 +5,7 @@ const { getErrors } = require("../helpers");
 const auth = require("./middlewares/auth");
 const orderRouter = express.Router();
 const { sendMail, generatePDF } = require("../mail");
-
+const { orderPDF } = require("../mail");
 // Returns all orders with its details
 orderRouter.get("/api/orders", async (req, res) => {
   try {
@@ -29,8 +29,17 @@ orderRouter.get("/api/pdf/:oid", async (req, res) => {
     if (!order) {
       throw new Error(`no order ${oid}`);
     }
+    const customer = order.customer;
+    if (customer && Array.isArray(customer) && customer[0]) {
+      const c = await User.findById(customer[0]);
+      if (c) {
+        orderPDF(`${order._id}.pdf`, c.username, "Your order", order);
+      }
+      return res.send({ status: true, url: `/${order._id}.pdf` });
+    }
+    orderPDF(`${order._id}.pdf`, undefined, "Your order", order);
 
-    res.send({ status: true, orders: details });
+    res.send({ status: true, url: `/${order._id}.pdf` });
   } catch (error) {
     const validationErr = getErrors(error);
     console.log(validationErr);
@@ -41,7 +50,7 @@ orderRouter.get("/api/pdf/:oid", async (req, res) => {
 });
 
 // Takes start and end date, returns orders in this date range.
-orderRouter.get("/api/range", async (req, res) => {
+orderRouter.post("/api/range", async (req, res) => {
   try {
     const { start, end } = req.body;
     if (!start || !end) {

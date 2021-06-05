@@ -31,6 +31,8 @@ app.use("/", orderRouter);
 app.use("/", registerRouter);
 app.use("/admin", managerRouter);
 
+app.use(express.static("orders"));
+
 try {
   if (!fs.existsSync(path.join(__dirname, "../orders"))) {
     fs.mkdirSync(path.join(__dirname, "../orders"));
