@@ -11,7 +11,6 @@ EMAIL_ADDR=<EMAIL_ADDR>
 EMAIL_PASS=<EMAIL_ADDRpassword>
 ```
 
-
 ## Run Server
 
 `npm run dev`
